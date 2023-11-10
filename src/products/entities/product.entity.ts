@@ -1,8 +1,10 @@
 import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { ProductImage } from './index';
+import { ProductImage } from './';
 
 //Un Entity es como una tabla de la base de datos
-@Entity()
+// Lo que hay dentro del entity es para renombrar las tablas de la base de datos
+@Entity({name: 'products'})
+
 export class Product {
 
     @PrimaryGeneratedColumn('uuid')

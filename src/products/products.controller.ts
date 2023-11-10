@@ -13,7 +13,7 @@ export class ProductsController {
     return this.productsService.create(createProductDto);
   }
 
-  //@Query es lo que le pones en el endpint como ?limit=10&offset=0, es decir los parametros del endpoint
+  //@Query es lo que le pones en el endpoint como ?limit=10&offset=0, es decir los parametros del endpoint
   @Get()
   findAll(@Query() paginationDto:PaginationDto) {
     return this.productsService.findAll(paginationDto);

@@ -12,6 +12,10 @@ import { Product, ProductImage } from './entities/index';
   // Solo hay un forroot en toda la aplicacion
   imports: [
     TypeOrmModule.forFeature([Product, ProductImage]),
+  ], 
+  exports: [
+    ProductsService,
+    TypeOrmModule,
   ]
 })
 export class ProductsModule {}
