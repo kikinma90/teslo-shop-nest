@@ -8,7 +8,7 @@ import { Product, ProductImage } from './entities/index';
 @Module({
   controllers: [ProductsController],
   providers: [ProductsService],
-  // la palara imports es para importar modulos
+  // la palabra imports es para importar modulos
   // Solo hay un forroot en toda la aplicacion
   imports: [
     TypeOrmModule.forFeature([Product, ProductImage]),
