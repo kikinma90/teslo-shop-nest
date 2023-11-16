@@ -28,9 +28,9 @@ import { AuthModule } from './auth/auth.module';
     }),
 
     // Para implementar y usar la carpeta public
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname,'..','public'),
-    }),
+    // ServeStaticModule.forRoot({
+    //   rootPath: join(__dirname,'..','public'),
+    // }),
 
     ProductsModule,
 
