@@ -1,12 +1,14 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { JwtService } from '@nestjs/jwt';
 import { In, Repository } from 'typeorm';
 
 // Cuando pones * as algo es una forma ligera de hacer el patron adaptador, en este caso se puede implementar el patron adaptador
 import * as bcrypt from 'bcrypt';
 
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, LoginUserDto } from './dto/';
 import { User } from './entities/user.entity';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 
 @Injectable()
@@ -15,7 +17,10 @@ export class AuthService {
   // Como necesitamos acceso al repositorio para hacer cosas en la base de datos, vamos a injectar las dependencias del repositorio en el constructor
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
+
+    // Este servicio es proveido por NestJS y a su vez por JwtModule
+    private readonly jwtService: JwtService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -33,13 +38,49 @@ export class AuthService {
       await this.userRepository.save(user);
       delete user.password;
 
-      return user;
-      // TODO: Retornar JWT de acceso
+     
+      // Generar el JWT que autentifica a este usuario
+      return {
+        // Exparcimos todas las propiedades del usuario
+        ...user,
+        // Llamamos a nuestra funcion para generar el JWT, que hay que enviarle un objeto que yo tenga el email del usuario, para que cumpla JwtPayload.
+        token: this.getJwtToken({email: user.email})
+      };
 
     } catch (error) {
 
       this.handleDBErrors(error);
     }
+  }
+
+  async login(LoginUserDto: LoginUserDto){
+    const {email, password} = LoginUserDto;
+
+    const user = await this.userRepository.findOne({
+      // Campo por el que se busca
+      where: {email},
+      // Campos que devuelve
+      select: {email: true, password: true}
+    });
+
+    if (!user) 
+      throw new BadRequestException('Credentials are not valid (email)');
+    
+    if (!bcrypt.compareSync(password, user.password))
+      throw new BadRequestException('Credentials are not valid (password)');
+
+    return {
+      ...user,
+      // Llamamos a nuestra funcion para generar el JWT, que hay que enviarle un objeto que yo tenga el email del usuario, para que cumpla JwtPayload.
+      token: this.getJwtToken({email: user.email})
+    };
+    // JWT es un string que está cifrado y por lo cual va a saber mi backend si el string ha sido manipulado o no
+
+  }
+
+  private getJwtToken(payload: JwtPayload){
+    const token = this.jwtService.sign(payload);
+    return token;
   }
 
   // Never es que esta funcion nunca devuelve nada
