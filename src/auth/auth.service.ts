@@ -32,7 +32,7 @@ export class AuthService {
       const user = this.userRepository.create({
         ...userData,
         // Lo que hace es generar una pass cada vez, el 10 es como el nunmero de veces que se va a ejecutar el algoritmo
-        password: await bcrypt.hash(password, 10)
+        password: bcrypt.hashSync(password, 10)
       });
 
       await this.userRepository.save(user);
@@ -44,7 +44,7 @@ export class AuthService {
         // Exparcimos todas las propiedades del usuario
         ...user,
         // Llamamos a nuestra funcion para generar el JWT, que hay que enviarle un objeto que yo tenga el email del usuario, para que cumpla JwtPayload.
-        token: this.getJwtToken({email: user.email})
+        token: this.getJwtToken({id: user.id})
       };
 
     } catch (error) {
@@ -60,7 +60,7 @@ export class AuthService {
       // Campo por el que se busca
       where: {email},
       // Campos que devuelve
-      select: {email: true, password: true}
+      select: {email: true, password: true, id: true}
     });
 
     if (!user) 
@@ -72,12 +72,23 @@ export class AuthService {
     return {
       ...user,
       // Llamamos a nuestra funcion para generar el JWT, que hay que enviarle un objeto que yo tenga el email del usuario, para que cumpla JwtPayload.
-      token: this.getJwtToken({email: user.email})
+      token: this.getJwtToken({id: user.id})
     };
     // JWT es un string que está cifrado y por lo cual va a saber mi backend si el string ha sido manipulado o no
 
   }
+  
+  async checkAuthStatus(user: User){
 
+    return {
+      ...user,
+      // Llamamos a nuestra funcion para generar el JWT, que hay que enviarle un objeto que yo tenga el email del usuario, para que cumpla JwtPayload.
+      token: this.getJwtToken({id: user.id})
+    };
+    // JWT es un string que está cifrado y por lo cual va a saber mi backend si el string ha sido manipulado o no
+
+  }
+  
   private getJwtToken(payload: JwtPayload){
     const token = this.jwtService.sign(payload);
     return token;
@@ -93,5 +104,6 @@ export class AuthService {
     throw new InternalServerErrorException('Please check server logs')
 
   }
+
 
 }

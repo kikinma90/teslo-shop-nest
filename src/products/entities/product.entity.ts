@@ -1,5 +1,6 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ProductImage } from './';
+import { User } from "../../auth/entities/user.entity";
 
 //Un Entity es como una tabla de la base de datos
 // Lo que hay dentro del entity es para renombrar las tablas de la base de datos
@@ -56,6 +57,17 @@ export class Product {
         {cascade: true, eager: true}
     )
     images?: ProductImage[];
+
+    // Relacion muchos productos un usuario
+    @ManyToOne(
+        // Se va a relacionar con la entidad User
+        () => User,
+        // El usuario sabe que se tiene que relacionar con user a traves de user.product
+        (user) => user.product,
+        // Cuando se cargue un producto cargue automaticamente esta relacion 
+        {eager: true}
+    )
+    user: User;
 
     @BeforeInsert()
     checkSlug(){

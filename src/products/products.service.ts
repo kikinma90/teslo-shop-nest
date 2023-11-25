@@ -8,6 +8,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import {validate as isUUID} from 'uuid';
 import { ProductImage, Product } from './entities';
+import { User } from '../auth/entities/user.entity';
 
 @Injectable()
 export class ProductsService {
@@ -29,7 +30,7 @@ export class ProductsService {
   ) {}
   
   // Se pone async ya que todo lo que se maneje con la base de datos es asincrono
-  async create(createProductDto: CreateProductDto) {
+  async create(createProductDto: CreateProductDto, user: User) {
     
     try {
 
@@ -39,7 +40,8 @@ export class ProductsService {
       // no lo insertamos en la DB aun
       const product = this.productRepository.create({
         ...productDtetails,
-        images: images.map(image => this.productImageRepository.create({url: image}))
+        images: images.map(image => this.productImageRepository.create({url: image})),
+        user,
       });
 
       // Insertamos el producto en la DB
@@ -102,7 +104,7 @@ export class ProductsService {
     }
   }
 
-  async update(id: string, updateProductDto: UpdateProductDto) {
+  async update(id: string, updateProductDto: UpdateProductDto, user: User) {
 
     const {images, ...toUpdate} = updateProductDto;
 
@@ -131,6 +133,8 @@ export class ProductsService {
       } else {
 
       }
+
+      product.user = user;
 
       await queryRunner.manager.save(product);
 

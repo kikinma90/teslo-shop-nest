@@ -29,9 +29,9 @@ export class JwtStrategy extends PassportStrategy(Strategy){
     // Este metodo lo vamos a llamar si el el jwt no ha expirado y si la firma del jwt hace match con el payload
     async validate(payload: JwtPayload): Promise<User> {
 
-        const { email } = payload;
+        const { id } = payload;
 
-        const user = await this.userRepository.findOneBy({email});
+        const user = await this.userRepository.findOneBy({id});
 
         if (!user) 
             throw new UnauthorizedException('Token not valid');

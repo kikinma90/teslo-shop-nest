@@ -1,5 +1,6 @@
 
-import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Product } from "../../products/entities";
 
 // El objetivo de las entidades es tener una realcion entre la base de datos y el codigo, es decir 
 // entre las tablas de nuestra base de datos y nuestra aplicacion 
@@ -33,6 +34,15 @@ export class User {
         default: ['user']
     })
     roles: string[];
+
+    // Relacion un usuario muchos productos
+    @OneToMany(
+        // Se va a relacionar con la entidad Product
+        () => Product,
+          // El User sabe que se tiene que relacionar con product a traves de product.user
+        (product) => product.user
+    )
+    product: Product;
 
     @BeforeInsert()
     checkFieldBeforeInsert(){

@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductsService } from './products.service';
 import { ProductsController } from './products.controller';
 import { Product, ProductImage } from './entities/index';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   controllers: [ProductsController],
@@ -12,6 +13,7 @@ import { Product, ProductImage } from './entities/index';
   // Solo hay un forroot en toda la aplicacion
   imports: [
     TypeOrmModule.forFeature([Product, ProductImage]),
+    AuthModule,
   ], 
   exports: [
     ProductsService,
