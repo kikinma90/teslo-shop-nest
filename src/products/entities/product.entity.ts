@@ -1,4 +1,6 @@
 import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { ApiProperty } from "@nestjs/swagger";
+
 import { ProductImage } from './';
 import { User } from "../../auth/entities/user.entity";
 
@@ -8,49 +10,93 @@ import { User } from "../../auth/entities/user.entity";
 
 export class Product {
 
+    @ApiProperty({
+        example: '98f3bbe4-9081-4c00-9212-a092e307e304',
+        description: 'Product ID',
+        uniqueItems: true
+    })
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
+    @ApiProperty({
+        example: 'T-Shirt Teslo',
+        description: 'Product Title',
+        uniqueItems: true
+    })
     @Column('text', {
         unique: true,
     })
     title: string;
 
+    @ApiProperty({
+        example: 0,
+        description: 'Product price',
+    })
     @Column('float', {
         default: 0
     })
     price: number;
 
+    @ApiProperty({
+        example: 'Ullamco id nostrud sint qui.',
+        description: 'Product description',
+    })
     @Column({
         type: 'text',
         nullable: true
     })
     description: string;
 
+    @ApiProperty({
+        example: 't_shirt_teslo',
+        description: 'Product Slug - for SEO',
+        uniqueItems: true
+    })
     @Column('text',{
         unique: true
     })
     slug: string;
 
+    @ApiProperty({
+        example: 10,
+        description: 'Product Stock',
+        default: 0
+    })
     @Column('int', {
         default: 0
     })
     stock: number;
 
+    @ApiProperty({
+        example: ['S','L'],
+        description: 'Product Sizes',
+    })
     @Column('text',{
         array: true
     })
     sizes: string[];
 
+    @ApiProperty({
+        example: 'Men',
+        description: 'Product Gender',
+    })
     @Column('text')
     gender: string;
 
+    @ApiProperty({
+        example: ['98f3bbe4-9081-4c00-9212-a092e307e304'],
+        description: 'Product tags',
+    })
     @Column('text', {
         array: true,
         default: []
     })
     tags: string[];
 
+    @ApiProperty({
+        example: '',
+        description: 'Product Images',
+    })
     @OneToMany(
         () => ProductImage,
         (productImage) => productImage.product,
